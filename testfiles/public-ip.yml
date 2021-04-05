@@ -1,0 +1,40 @@
+#Create public IP Address
+---
+- hosts: localhost
+  connection: local
+  tasks:
+  - name: Creating public IP address
+    azure_rm_publicipaddress:
+      resource_group: my-rg
+      name: taskPublicIP
+  - name: Creating public IP address
+    azure_rm_publicipaddress:
+      resource_group: my-rg
+      name: taskPublicIP-1
+  - name: Create a network security group
+    azure_rm_securitygroup:
+      resource_group: my-rg
+      name: taskNSG
+      rules:
+        - name: SSH
+          protocol: Tcp
+          destination_port_range: 22
+          access: Allow
+          priority: 1001
+          direction: Inbound
+  - name: Create virtual network interface card
+    azure_rm_networkinterface:
+      resource_group: my-rg
+      name: taskNIC
+      virtual_network: task-vnet
+      subnet: task-subnet
+      public_ip_name: taskPublicIP
+      security_group: taskNSG
+  - name: Create virtual network interface card
+    azure_rm_networkinterface:
+      resource_group: my-rg
+      name: taskNIC-1
+      virtual_network: task-vnet
+      subnet: task-subnet
+      public_ip_name: taskPublicIP-1
+      security_group: taskNSG

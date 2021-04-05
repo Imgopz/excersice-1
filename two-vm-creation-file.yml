@@ -1,0 +1,84 @@
+#create resouce group in azure subscription
+---
+- hosts: localhost
+  connection: local
+  tasks:
+  - name: Create resource group
+    azure_rm_resourcegroup:
+      name: my-rg
+      location: eastus
+    register: rg
+  - debug:
+      var: rg
+  - name: create virtual network
+    azure_rm_virtualnetwork:
+      resource_group: my-rg
+      name: task-vnet
+      address_prefixes: "10.0.0.0/16"
+  - name: add subnet in vnet
+    azure_rm_subnet:
+      resource_group: my-rg
+      name: task-subnet
+      address_prefix: "10.0.1.0/24"
+      virtual_network: task-vnet
+  - name: Creating public IP address - 1
+    azure_rm_publicipaddress:
+      resource_group: my-rg
+      name: taskPublicIP-1
+  - name: Creating public IP address - 2
+    azure_rm_publicipaddress:
+      resource_group: my-rg
+      name: taskPublicIP-2
+  - name: Create a network security group
+    azure_rm_securitygroup:
+      resource_group: my-rg
+      name: taskNSG
+      rules:
+        - name: SSH
+          protocol: Tcp
+          destination_port_range: 22
+          access: Allow
+          priority: 1001
+          direction: Inbound
+  - name: Create virtual network interface card - 1
+    azure_rm_networkinterface:
+      resource_group: my-rg
+      name: taskNIC-1
+      virtual_network: task-vnet
+      subnet: task-subnet
+      public_ip_name: taskPublicIP-1
+      security_group: taskNSG
+  - name: Create virtual network interface card - 2
+    azure_rm_networkinterface:
+      resource_group: my-rg
+      name: taskNIC-2
+      virtual_network: task-vnet
+      subnet: task-subnet
+      public_ip_name: taskPublicIP-2
+      security_group: taskNSG
+  - name: Creating VM - 1
+    azure_rm_virtualmachine:
+      resource_group: my-rg
+      name: task-vm-1
+      vm_size: Standard_DS1_v2
+      admin_username: azureuser
+      admin_password: Asureuser$123
+      network_interface_names: taskNIC-1
+      image:
+        offer: CentOS
+        publisher: OpenLogic
+        sku: '7.5'
+        version: latest
+  - name: Creating VM - 2
+    azure_rm_virtualmachine:
+      resource_group: my-rg
+      name: task-vm-2
+      vm_size: Standard_DS1_v2
+      admin_username: azureuser
+      admin_password: Asureuser$123
+      network_interface_names: taskNIC-2
+      image:
+        offer: CentOS
+        publisher: OpenLogic
+        sku: '7.5'
+        version: latest

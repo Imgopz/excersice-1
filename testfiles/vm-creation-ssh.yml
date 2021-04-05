@@ -1,0 +1,21 @@
+# Create virtual machine
+- hosts: localhost
+  connection: local
+  tasks:
+  - name: Creating VM - 1
+    azure_rm_virtualmachine:
+      resource_group: my-rg
+      name: task-vm-1
+      vm_size: Standard_DS1_v2
+      admin_username: azureuser
+      admin_password: azureuser
+      ssh_password_enabled: false
+      ssh_public_keys:
+        - path: /home/azureuser/.ssh/authorized_keys
+          key_data: "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAQEAjYaaMy2wPkEIXnOg5MB4ZOjHI405DvzcpOzQdhCzGr770S8+KquqbUU86vwCuAwvHMEnt7aSkgWy4IQbvdlngp+Nnb5imzd/i6fQa9uX1fjv1eZgLm+vNKTPcs0Z2n0b/c6bpRp9M2FyHJbqhvnVcYWFTOo3cxED0tC50SZ+fwva+KaS9KYA4hDdyWyfbKC3B6agOGOpMi36kHNS5VTvHqgaRCxDhfDqYaixY0XeX+1n4OLk3t6i8LRj3kwYF7ImTf1axK14KLHKGFtR0d5OgSx7fxGtGWJ5BkyrbGGoaB6Qh8rOLtvnyCptQE1xiIKGQ/qRWiwYkqrAwUdMLeGIzw== rsa-key-20210405"
+      network_interface_names: taskNIC
+      image:
+        offer: CentOS
+        publisher: OpenLogic
+        sku: '7.5'
+        version: latest

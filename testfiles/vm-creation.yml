@@ -1,0 +1,30 @@
+# Create virtual machine
+- hosts: localhost
+  connection: local
+  tasks:
+  - name: Creating VM - 1
+    azure_rm_virtualmachine:
+      resource_group: my-rg
+      name: task-vm-1
+      vm_size: Standard_DS1_v2
+      admin_username: azureuser
+      admin_password: azureuser
+      network_interface_names: taskNIC
+      image:
+        offer: CentOS
+        publisher: OpenLogic
+        sku: '7.5'
+        version: latest
+  - name: Creating VM - 2
+    azure_rm_virtualmachine:
+      resource_group: my-rg
+      name: task-vm-2
+      vm_size: Standard_DS1_v2
+      admin_username: azureuser
+      admin_password: azureuser
+      network_interface_names: taskNIC-1
+      image:
+        offer: CentOS
+        publisher: OpenLogic
+        sku: '7.5'
+        version: latest
